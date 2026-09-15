@@ -13,29 +13,56 @@ function esPremiumInfinito() {
 
 function esPremiumMensual(id) {
     const activo = localStorage.getItem(id + "_premiumActivo");
-    const fin = localStorage.getItem(id + "_premiumFin");
+    const finRaw = localStorage.getItem(id + "_premiumFin");
 
     if (activo === "true") {
-        if (Date.now() > fin) {
+        // Protección contra fechas corruptas
+        if (!finRaw || isNaN(Number(finRaw))) {
             localStorage.removeItem(id + "_premiumActivo");
+            localStorage.removeItem(id + "_premiumFin");
             return false;
         }
+
+        const fin = Number(finRaw);
+
+        // Si ya terminó → borrar y devolver false
+        if (Date.now() > fin) {
+            localStorage.removeItem(id + "_premiumActivo");
+            localStorage.removeItem(id + "_premiumFin");
+            return false;
+        }
+
         return true;
     }
+
     return false;
 }
 
 function esPruebaActiva(id) {
     const activa = localStorage.getItem(id + "_pruebaActiva");
-    const fin = localStorage.getItem(id + "_pruebaFin");
+    const finRaw = localStorage.getItem(id + "_pruebaFin");
 
     if (activa === "true") {
-        if (Date.now() > fin) {
+
+        // Protección contra fechas corruptas
+        if (!finRaw || isNaN(Number(finRaw))) {
             localStorage.removeItem(id + "_pruebaActiva");
+            localStorage.removeItem(id + "_pruebaFin");
             return false;
         }
+
+        const fin = Number(finRaw);
+
+        // Si terminó → borrar y devolver false
+        if (Date.now() > fin) {
+            localStorage.removeItem(id + "_pruebaActiva");
+            localStorage.removeItem(id + "_pruebaFin");
+            return false;
+        }
+
         return true;
     }
+
     return false;
 }
 
@@ -45,6 +72,7 @@ function esPruebaActiva(id) {
 // Pomodoro, tareas, dashboard, logros, etc.
 function accesoModuloNormal() {
     const id = localStorage.getItem("usuarioID");
+
     if (!id) {
         alert("Debes iniciar sesión.");
         location.href = "login.html";
@@ -52,7 +80,12 @@ function accesoModuloNormal() {
     }
 
     // Módulos normales → prueba SÍ puede entrar
-    if (esCreador() || esPremiumInfinito() || esPremiumMensual(id) || esPruebaActiva(id)) {
+    if (
+        esCreador() ||
+        esPremiumInfinito() ||
+        esPremiumMensual(id) ||
+        esPruebaActiva(id)
+    ) {
         return; // acceso permitido
     }
 
@@ -66,6 +99,7 @@ function accesoModuloNormal() {
 // Rutina PRIME, Lectura PRIME, 70 trucos
 function accesoModuloPremiumSolo() {
     const id = localStorage.getItem("usuarioID");
+
     if (!id) {
         alert("Debes iniciar sesión.");
         location.href = "login.html";
