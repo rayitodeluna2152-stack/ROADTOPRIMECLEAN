@@ -59,46 +59,35 @@
 
 <body>
 
-<script defer src="access.js"></script>
-
 <script>
-  // ============================
-  // 🔥 ESTADO PREMIUM
-  // ============================
-  checkBaseAccess(); // asegura login y estado correcto
-
   const id = localStorage.getItem("usuarioID");
   const modoCreador = localStorage.getItem("modoCreador");
 
   const premiumActivo = localStorage.getItem(id + "_premiumActivo");
-  const premiumFin = localStorage.getItem(id + "_premiumFin");
+  const premiumFin = Number(localStorage.getItem(id + "_premiumFin"));
 
   const pruebaActiva = localStorage.getItem(id + "_pruebaActiva");
-  const pruebaFin = localStorage.getItem(id + "_pruebaFin");
+  const pruebaFin = Number(localStorage.getItem(id + "_pruebaFin"));
 
   function calcularDiasRestantes(fin) {
       const msRestantes = fin - Date.now();
-      return Math.ceil(msRestantes / (1000 * 60 * 60 * 24));
+      return Math.floor(msRestantes / (1000 * 60 * 60 * 24)) + 1;
   }
 
   let mensaje = "";
   let dias = "";
 
-  // ============================
-  // 🔥 CREATOR MODE
-  // ============================
   if (modoCreador === "true") {
       mensaje = "Eres el creador 🔥";
       dias = "Acceso ilimitado sin caducidad.";
   }
 
-  // ============================
-  // 🔥 PREMIUM NORMAL
-  // ============================
   else if (premiumActivo === "true") {
-      const diasRestantes = calcularDiasRestantes(Number(premiumFin));
+      const diasRestantes = calcularDiasRestantes(premiumFin);
 
       if (diasRestantes <= 0) {
+          localStorage.removeItem(id + "_premiumActivo");
+          localStorage.removeItem(id + "_premiumFin");
           mensaje = "Tu suscripción PREMIUM ha terminado.";
           dias = "Renueva para seguir usando PRIME.";
       } else {
@@ -107,13 +96,12 @@
       }
   }
 
-  // ============================
-  // 🔥 PRUEBA ACTIVA
-  // ============================
   else if (pruebaActiva === "true") {
-      const diasRestantes = calcularDiasRestantes(Number(pruebaFin));
+      const diasRestantes = calcularDiasRestantes(pruebaFin);
 
       if (diasRestantes <= 0) {
+          localStorage.removeItem(id + "_pruebaActiva");
+          localStorage.removeItem(id + "_pruebaFin");
           mensaje = "Tu prueba gratuita ha terminado.";
           dias = "Activa PREMIUM para seguir usando todo.";
       } else {
@@ -122,9 +110,6 @@
       }
   }
 
-  // ============================
-  // 🔥 SIN NADA
-  // ============================
   else {
       mensaje = "No tienes prueba ni PREMIUM.";
       dias = "Activa tu prueba o PREMIUM para continuar.";
