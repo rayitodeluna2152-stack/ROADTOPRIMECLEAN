@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Road To Prime - Premium</title>
+
     <style>
         body {
             background: #000;
@@ -69,17 +70,38 @@
         <li>✓ Actualizaciones exclusivas</li>
     </ul>
 
-    <p style="font-size:20px; margin-top:10px;">Precio: 9,99€</p>
+    <p id="precioTexto" style="font-size:20px; margin-top:10px;"></p>
 
     <button onclick="pagarPremium()">Activar PREMIUM</button>
 </div>
 
 <script>
+// ===============================
+// 🔥 SISTEMA DE OFERTA AUTOMÁTICA
+// ===============================
+
+const hoy = new Date();
+const inicioOferta = new Date("2026-09-15");
+const finOferta = new Date("2026-10-15");
+
+let precio = 9.99;
+
+if (hoy >= inicioOferta && hoy <= finOferta) {
+    precio = 6.99;
+}
+
+document.getElementById("precioTexto").innerText = "Precio: " + precio + "€";
+
+// ===============================
+// 🔥 PAGO PREMIUM
+// ===============================
+
 async function pagarPremium() {
     try {
-        const respuesta = await fetch("http://localhost:3001/crear-pago", {
+        const respuesta = await fetch("https://TU_URL_BACKEND/crear-pago", {
             method: "POST",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ precio })
         });
 
         if (!respuesta.ok) {
