@@ -24,7 +24,6 @@ const btnTrucos = document.getElementById("btn-trucos");
 if (btnTrucos) {
   btnTrucos.addEventListener("click", () => {
 
-    // Usamos tu sistema de acceso premium
     const id = localStorage.getItem("usuarioID");
 
     if (!id) {
@@ -36,7 +35,7 @@ if (btnTrucos) {
     const esCreador = localStorage.getItem("modoCreador") === "true";
     const premiumInfinito = localStorage.getItem("premium") === "true";
     const premiumActivo = localStorage.getItem(id + "_premiumActivo");
-    const premiumFin = localStorage.getItem(id + "_premiumFin");
+    const premiumFin = Number(localStorage.getItem(id + "_premiumFin"));
 
     // CREADOR → entra
     if (esCreador || premiumInfinito) {
@@ -46,6 +45,7 @@ if (btnTrucos) {
 
     // PREMIUM MENSUAL → entra
     if (premiumActivo === "true") {
+
       if (Date.now() > premiumFin) {
         localStorage.removeItem(id + "_premiumActivo");
         alert("Tu premium ha caducado.");
@@ -59,9 +59,10 @@ if (btnTrucos) {
 
     // PRUEBA → NO entra
     const pruebaActiva = localStorage.getItem(id + "_pruebaActiva");
-    const pruebaFin = localStorage.getItem(id + "_pruebaFin");
+    const pruebaFin = Number(localStorage.getItem(id + "_pruebaFin"));
 
     if (pruebaActiva === "true") {
+
       if (Date.now() > pruebaFin) {
         localStorage.removeItem(id + "_pruebaActiva");
         alert("Tu prueba ha caducado.");
@@ -80,7 +81,7 @@ if (btnTrucos) {
 }
 
 // ===============================
-// PROFESORES IA
+// PROFESORES IA (solo aviso)
 // ===============================
 
 document.querySelectorAll(".btn-profesor")?.forEach(btn => {
