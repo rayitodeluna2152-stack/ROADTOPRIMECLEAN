@@ -6,11 +6,22 @@ if (localStorage.getItem("modoCreador") === "true") {
     return;
 }
 
+// Leer estado de prueba
 const activa = localStorage.getItem(id + "_pruebaActiva");
 const finRaw = localStorage.getItem(id + "_pruebaFin");
 
-// PROTECCIÓN: si finRaw no existe o no es número → premium
-if (activa !== "true" || !finRaw || isNaN(Number(finRaw))) {
+// 🔒 PROTECCIÓN REAL: solo entra si la prueba está activada correctamente
+if (activa !== "true") {
+    // La prueba NO está activada → premium
+    location.href = "premium.html";
+    return;
+}
+
+// 🔒 PROTECCIÓN: fecha corrupta o inexistente
+if (!finRaw || isNaN(Number(finRaw))) {
+    // La prueba está mal guardada → se elimina y se manda a premium
+    localStorage.removeItem(id + "_pruebaActiva");
+    localStorage.removeItem(id + "_pruebaFin");
     location.href = "premium.html";
     return;
 }
@@ -18,10 +29,10 @@ if (activa !== "true" || !finRaw || isNaN(Number(finRaw))) {
 const fin = Number(finRaw);
 const ahora = Date.now();
 
-// 🔥 CÁLCULO PERFECTO DE DÍAS
-const dias = Math.floor((fin - ahora) / (1000 * 60 * 60 * 24)) + 1;
+// 🔥 CÁLCULO PERFECTO DE DÍAS RESTANTES
+const dias = Math.ceil((fin - ahora) / (1000 * 60 * 60 * 24));
 
-// Si terminó → premium
+// Si terminó → borrar prueba y mandar a premium
 if (dias <= 0) {
     localStorage.removeItem(id + "_pruebaActiva");
     localStorage.removeItem(id + "_pruebaFin");
@@ -29,4 +40,5 @@ if (dias <= 0) {
     return;
 }
 
+// Mostrar días restantes
 document.getElementById("diasRestantes").innerText = dias;
