@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pago completado</title>
     <style>
         body {
@@ -34,11 +35,35 @@
     <h1>¡Pago completado!</h1>
     <p>Tu suscripción premium ya está activa.</p>
 
-    <a class="btn" href="index.html">Volver a la página principal</a>
+    <a class="btn" href="home.html">Ir al inicio</a>
 
     <script>
-        // Activar premium en tu app
-        localStorage.setItem("premium", "true");
+        // ============================
+        // 🔥 ACTIVAR PREMIUM REAL
+        // ============================
+
+        const id = localStorage.getItem("usuarioID");
+
+        if (!id) {
+            alert("Debes iniciar sesión.");
+            location.href = "login.html";
+        } else {
+            const inicio = Date.now();
+            const fin = inicio + (30 * 24 * 60 * 60 * 1000); // 30 días
+
+            localStorage.setItem(id + "_premiumActivo", "true");
+            localStorage.setItem(id + "_premiumInicio", String(inicio));
+            localStorage.setItem(id + "_premiumFin", String(fin));
+
+            // Desactivar prueba completamente
+            localStorage.removeItem(id + "_pruebaActiva");
+            localStorage.removeItem(id + "_pruebaFin");
+
+            console.log("🔥 PREMIUM ACTIVADO PARA:", id);
+
+            // Opcional: redirigir automáticamente al home
+            // location.href = "home.html";
+        }
     </script>
 
 </body>
