@@ -93,12 +93,12 @@ if (hoy >= inicioOferta && hoy <= finOferta) {
 document.getElementById("precioTexto").innerText = "Precio: " + precio + "€";
 
 // ===============================
-// 🔥 PAGO PREMIUM
+// 🔥 PAGO PREMIUM (CORREGIDO)
 // ===============================
 
 async function pagarPremium() {
     try {
-        const respuesta = await fetch("https://TU_URL_BACKEND/crear-pago", {
+        const respuesta = await fetch("https://backend-prime-production.up.railway.app", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ precio })
