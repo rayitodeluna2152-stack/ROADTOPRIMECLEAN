@@ -380,6 +380,8 @@ body {
   cursor: pointer !important;
 }
 
+/* GRID MÓDULOS HOME */
+
 .modules {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -400,3 +402,28 @@ body {
     box-shadow: 0 0 25px rgba(249, 115, 22, 0.35);
 }
 
+/* ===========================
+   BOTÓN DISCORD PRIME
+=========================== */
+
+.btn-discord {
+    background: linear-gradient(135deg, #5865F2, #4e5bd4);
+    color: white;
+    padding: 14px 26px;
+    border-radius: 999px;
+    border: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.25s ease;
+    box-shadow: 0 0 25px rgba(88, 101, 242, 0.35);
+    display: inline-block;
+    min-width: 180px;
+    text-align: center;
+}
+
+/* ANIMACIÓN */
+.btn-discord:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 0 35px rgba(88, 101, 242, 0.65);
+}
