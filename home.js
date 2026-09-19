@@ -20,6 +20,22 @@ function activarPrueba() {
         return;
     }
 
+    // Si es creador → no necesita prueba
+    if (localStorage.getItem("modoCreador") === "true") {
+        alert("Bro… eres el creador, tienes acceso infinito 🔥");
+        location.href = "dashboard.html";
+        return;
+    }
+
+    // Si ya es premium → no activar prueba
+    const premiumActivo = localStorage.getItem(id + "_premiumActivo");
+    const premiumFin = Number(localStorage.getItem(id + "_premiumFin"));
+    if (premiumActivo === "true" && Date.now() < premiumFin) {
+        alert("Ya eres PREMIUM bro 🔥");
+        location.href = "dashboard.html";
+        return;
+    }
+
     // Ya usó la prueba antes
     if (localStorage.getItem(id + "_pruebaUsada") === "true") {
         alert("Ya usaste tu prueba gratuita en este dispositivo.");
@@ -30,7 +46,6 @@ function activarPrueba() {
     const inicio = Date.now();
     const fin = inicio + (7 * 24 * 60 * 60 * 1000);
 
-    // 🔥 CORRECCIÓN IMPORTANTE:
     // Guardar SIEMPRE como STRING válido
     localStorage.setItem(id + "_pruebaActiva", "true");
     localStorage.setItem(id + "_pruebaInicio", String(inicio));
@@ -39,4 +54,30 @@ function activarPrueba() {
 
     // Ir a la pantalla de prueba
     location.href = "trial.html";
+}
+// ===============================
+// 🔒 MOSTRAR BOTÓN DISCORD SOLO A PREMIUM
+// ===============================
+
+const id = localStorage.getItem("usuarioID");
+const modoCreador = localStorage.getItem("modoCreador");
+
+const premiumActivo = localStorage.getItem(id + "_premiumActivo");
+const premiumFin = Number(localStorage.getItem(id + "_premiumFin"));
+const now = Date.now();
+
+const pruebaActiva = localStorage.getItem(id + "_pruebaActiva");
+const pruebaFin = Number(localStorage.getItem(id + "_pruebaFin"));
+
+const btnDiscord = document.querySelector(".btn-discord");
+
+if (btnDiscord) {
+    // Si NO es premium ni prueba → ocultar botón
+    if (
+        modoCreador !== "true" &&
+        !(premiumActivo === "true" && premiumFin > now) &&
+        !(pruebaActiva === "true" && pruebaFin > now)
+    ) {
+        btnDiscord.style.display = "none";
+    }
 }
