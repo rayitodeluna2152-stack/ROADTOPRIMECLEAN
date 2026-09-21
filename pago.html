@@ -77,12 +77,12 @@
 
 <script>
 // ===============================
-// 🔥 SISTEMA DE OFERTA AUTOMÁTICA
+// 🔥 SISTEMA DE OFERTA AUTOMÁTICA (ACTUALIZADO)
 // ===============================
 
 const hoy = new Date();
-const inicioOferta = new Date("2026-09-15");
-const finOferta = new Date("2026-10-15");
+const inicioOferta = new Date("2026-09-25");
+const finOferta = new Date("2026-10-25");
 
 let precio = 9.99;
 
@@ -93,12 +93,12 @@ if (hoy >= inicioOferta && hoy <= finOferta) {
 document.getElementById("precioTexto").innerText = "Precio: " + precio + "€";
 
 // ===============================
-// 🔥 PAGO PREMIUM (CORREGIDO)
+// 🔥 PAGO PREMIUM (RUTA CORRECTA)
 // ===============================
 
 async function pagarPremium() {
     try {
-        const respuesta = await fetch("https://backend-prime-production.up.railway.app", {
+        const respuesta = await fetch("https://backend-prime-production.up.railway.app/crear-pago", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ precio })
