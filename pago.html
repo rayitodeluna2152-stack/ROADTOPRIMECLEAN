@@ -38,6 +38,25 @@
             transform: scale(1.05);
         }
 
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #debugBox {
+            margin-top: 20px;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 12px;
+            word-break: break-word;
+            white-space: pre-wrap;
+            display: none;
+        }
+
         @keyframes primeFade {
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -72,7 +91,9 @@
 
     <p id="precioTexto" style="font-size:20px; margin-top:10px;"></p>
 
-    <button onclick="pagarPremium()">Activar PREMIUM</button>
+    <button id="btnPagar" onclick="pagarPremium()">Activar PREMIUM</button>
+
+    <div id="debugBox"></div>
 </div>
 
 <script>
@@ -93,34 +114,86 @@ if (hoy >= inicioOferta && hoy <= finOferta) {
 document.getElementById("precioTexto").innerText = "Precio: " + precio + "€";
 
 // ===============================
-// 🔥 PAGO PREMIUM (CORREGIDO)
+// 🔥 PAGO PREMIUM (CON DIAGNÓSTICO EN PANTALLA)
 // ===============================
 
+const URL_BACKEND = "https://backend-prime-production.up.railway.app/crear-pago";
+
+function mostrarDebug(texto) {
+    const box = document.getElementById("debugBox");
+    box.style.display = "block";
+    box.innerText = texto;
+}
+
 async function pagarPremium() {
+    const boton = document.getElementById("btnPagar");
+    boton.disabled = true;
+    boton.innerText = "Conectando...";
+
+    mostrarDebug("Intentando conectar a:\n" + URL_BACKEND);
+
     try {
-        const respuesta = await fetch("https://backend-prime-production.up.railway.app/crear-pago", {
+        const respuesta = await fetch(URL_BACKEND, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ precio })
         });
 
-        if (!respuesta.ok) {
-            alert("Error al conectar con el servidor.");
+        mostrarDebug(
+            "✅ El fetch SÍ llegó al servidor.\n" +
+            "Status HTTP: " + respuesta.status + "\n" +
+            "OK: " + respuesta.ok
+        );
+
+        let datos;
+        const textoRespuesta = await respuesta.text();
+
+        try {
+            datos = JSON.parse(textoRespuesta);
+        } catch (parseError) {
+            mostrarDebug(
+                "⚠️ El servidor respondió pero NO es JSON válido.\n" +
+                "Status: " + respuesta.status + "\n\n" +
+                "Respuesta cruda del servidor:\n" + textoRespuesta.substring(0, 500)
+            );
+            boton.disabled = false;
+            boton.innerText = "Activar PREMIUM";
             return;
         }
 
-        const datos = await respuesta.json();
+        if (!respuesta.ok) {
+            mostrarDebug(
+                "⚠️ El servidor respondió con error.\n" +
+                "Status: " + respuesta.status + "\n" +
+                "Contenido: " + JSON.stringify(datos, null, 2)
+            );
+            boton.disabled = false;
+            boton.innerText = "Activar PREMIUM";
+            return;
+        }
 
         if (!datos.url) {
-            alert("Error: el servidor no devolvió la URL de Stripe.");
+            mostrarDebug(
+                "⚠️ El servidor respondió OK pero sin campo 'url'.\n" +
+                "Contenido recibido: " + JSON.stringify(datos, null, 2)
+            );
+            boton.disabled = false;
+            boton.innerText = "Activar PREMIUM";
             return;
         }
 
+        mostrarDebug("✅ Todo correcto. Redirigiendo a Stripe...");
         window.location.href = datos.url;
 
     } catch (error) {
-        console.error("Error:", error);
-        alert("Hubo un problema al iniciar el pago.");
+        mostrarDebug(
+            "❌ EL FETCH FALLÓ ANTES DE LLEGAR AL SERVIDOR (o el navegador bloqueó la respuesta).\n\n" +
+            "Nombre del error: " + error.name + "\n" +
+            "Mensaje: " + error.message + "\n\n" +
+            "Causas típicas: CORS bloqueado, backend caído, URL mal escrita, o sin conexión a internet."
+        );
+        boton.disabled = false;
+        boton.innerText = "Activar PREMIUM";
     }
 }
 </script>
